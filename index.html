@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎰 ມື້ນີ້ກິນຫຍັງດີ? - Food Slot Machine</title>
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ມື້ນີ້ກິນຫຍັງດີ?">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f4fbf9">
+    <!-- Google Fonts: Outfit for numbers/English, Noto Sans Lao for Lao text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-teal-dark: #0f766e;
+            --color-teal: #0d9488;
+            --color-teal-light: #14b8a6;
+            --color-mint: #2dd4bf;
+            --color-mint-light: #99f6e4;
+            --color-slate-900: #0f172a;
+            --color-slate-800: #1e293b;
+            --color-slate-700: #334155;
+            --color-slate-500: #64748b;
+            --color-slate-100: #f1f5f9;
+            --color-coral: #f43f5e;
+            --color-coral-light: #fda4af;
+            
+            --font-main: "Noto Sans Lao", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            --font-alt: "Outfit", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: radial-gradient(circle at center, #f4fbf9 0%, #e2e8f0 100%);
+            color: var(--color-slate-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Background Blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(45, 212, 191, 0.2) 0%, transparent 70%);
+            z-index: -2;
+            filter: blur(60px);
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%);
+            z-index: -2;
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        /* App Container */
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            flex-grow: 1;
+            z-index: 1;
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-family: var(--font-main);
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.85rem;
+            cursor: default;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--color-slate-900) 30%, var(--color-teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        /* Custom SVG Cloche Header Icon */
+        .header-icon {
+            stroke: var(--color-teal);
+            fill: rgba(45, 212, 191, 0.18);
+            filter: drop-shadow(0 2px 6px rgba(13, 148, 136, 0.25));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
+        }
+
+        header h1:hover .header-icon {
+            transform: scale(1.15) rotate(12deg);
+        }
+
+        header p {
+            color: var(--color-slate-500);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Glassmorphic Light Panel Card */
+        .panel-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(13, 148, 136, 0.15);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Left Slot Machine Column */
+        .spinner-section {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Slot Machine Chassis Casing */
+        .slot-machine-cabinet {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 1.5rem 0;
+            background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
+            border: 5px solid #64748b;
+            border-radius: 36px 36px 20px 20px;
+            padding: 24px 24px 20px 24px;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15), 
+                        inset 0 4px 0 #ffffff,
+                        inset 0 -4px 0 #94a3b8;
+            border-bottom: 12px solid #475569;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top Casing LED lights bar */
+        .cabinet-led-header {
+            width: 100%;
+            height: 12px;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 12px;
+            background: #1e293b;
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .led-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-teal);
+            transition: all 0.25s;
+        }
+
+        /* View Screen viewport */
+        .slot-reel-viewport {
+            width: 100%;
+            max-width: 300px;
+            height: 360px;
+            background: #0f172a;
+            border: 4px solid #475569;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8),
+                        0 0 12px rgba(13, 148, 136, 0.15);
+        }
+
+        #reel-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Central Highlight target frame */
+        .slot-target-frame {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 90px;
+            border: 3px dashed var(--color-mint);
+            border-radius: 12px;
+            pointer-events: none;
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.4), 
+                        inset 0 0 10px rgba(45, 212, 191, 0.2);
+            background: rgba(45, 212, 191, 0.04);
+            z-index: 2;
+        }
+
+        .slot-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            z-index: 3;
+            filter: drop-shadow(0 0 4px var(--color-coral));
+        }
+
+        .slot-arrow-left {
+            left: 12px;
+            border-left: 12px solid var(--color-coral);
+        }
+
+        .slot-arrow-right {
+            right: 12px;
+            border-right: 12px solid var(--color-coral);
+        }
+
+        /* Pull Lever container on the right */
+        .lever-container {
+            position: absolute;
+            right: -32px;
+            top: 100px;
+            width: 40px;
+            height: 200px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            perspective: 400px;
+        }
+
+        .lever-shaft {
+            width: 8px;
+            height: 110px;
+            background: linear-gradient(90deg, #94a3b8, #f1f5f9 50%, #64748b);
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        .lever-knob {
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle at 30% 30%, var(--color-coral-light), var(--color-coral));
+            border-radius: 50%;
+            position: absolute;
+            top: -24px;
+            left: -10px;
+            box-shadow: 0 4px 8px rgba(244, 63, 94, 0.4),
+                        inset -2px -2px 6px rgba(0,0,0,0.3);
+            transition: transform 0.15s;
+        }
+
+        .lever-base {
+            width: 32px;
+            height: 32px;
+            background: radial-gradient(circle at center, #64748b, #334155);
+            border-radius: 50%;
+            border: 3px solid #cbd5e1;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+            margin-top: -8px;
+            z-index: 6;
+        }
+
+        /* Pull animation class trigger */
+        .lever-container.pulling .lever-shaft {
+            transform: rotateX(65deg) scaleY(0.25);
+        }
+
+        .lever-container.pulling .lever-knob {
+            transform: translateY(80px) scale(0.9);
+        }
+
+        /* Spin & Control Buttons */
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            font-family: var(--font-main);
+            padding: 1rem 2rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-teal) 0%, var(--color-mint) 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+            flex-grow: 2;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 22px rgba(13, 148, 136, 0.35);
+            background: linear-gradient(135deg, var(--color-teal-dark) 0%, var(--color-teal) 100%);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--color-slate-700);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            flex-grow: 1;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(13, 148, 136, 0.05);
+            color: var(--color-teal-dark);
+            border-color: var(--color-teal-dark);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Right Panel: List and Add Form */
+        .list-section {
+            align-items: stretch;
+            max-height: 620px;
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-teal-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(13, 148, 136, 0.15);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Form styling */
+        .add-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .form-input {
+            width: 100%;
+            font-family: var(--font-main);
+            background: #ffffff;
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            color: var(--color-slate-900);
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            outline: none;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--color-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+
+        .btn-add {
+            font-family: var(--font-main);
+            background: var(--color-teal);
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 0.85rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn-add:hover {
+            background: var(--color-teal-dark);
+            transform: scale(1.03);
+        }
+
+        /* List Controls */
+        .list-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--color-slate-500);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-link {
+            background: none;
+            border: none;
+            color: var(--color-teal);
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .action-link:hover {
+            color: var(--color-teal-dark);
+            text-decoration: underline;
+        }
+
+        /* Food List Scrolling Area */
+        .food-list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            max-height: 380px;
+        }
+
+        /* Scrollbar Styling */
+        .food-list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .food-list-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        .food-list-container::-webkit-scrollbar-thumb {
+            background: rgba(13, 148, 136, 0.2);
+            border-radius: 10px;
+        }
+
+        .food-list-container::-webkit-scrollbar-thumb:hover {
+            background: var(--color-teal);
+        }
+
+        /* Item Row Card */
+        .food-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .food-item:hover {
+            background: #f8fafc;
+            border-color: rgba(13, 148, 136, 0.3);
+            transform: translateX(3px);
+        }
+
+        .food-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+            flex-grow: 1;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid rgba(13, 148, 136, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .food-item.active .checkbox-custom {
+            border-color: var(--color-teal);
+            background: var(--color-teal);
+        }
+
+        .checkbox-custom::after {
+            content: '✓';
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 900;
+            display: none;
+        }
+
+        .food-item.active .checkbox-custom::after {
+            display: block;
+        }
+
+        .food-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-slate-800);
+            transition: color 0.2s;
+        }
+
+        .food-item:not(.active) .food-name {
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete:hover {
+            color: var(--color-coral);
+            background: rgba(244, 63, 94, 0.08);
+        }
+
+        /* Winner Modal Popup Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .winner-card {
+            background: radial-gradient(circle at top, #ffffff 0%, #f0fdfa 100%);
+            border: 2px solid var(--color-mint);
+            border-radius: 32px;
+            padding: 3rem 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 45px rgba(13, 148, 136, 0.2);
+            transform: scale(0.7) translateY(50px);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-overlay.show .winner-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .winner-subtitle {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.3rem;
+            color: var(--color-teal-dark);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-main);
+        }
+
+        .winner-emoji {
+            font-size: 5rem;
+            margin: 1.5rem 0;
+            display: inline-block;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        .winner-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--color-slate-900);
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            line-height: 1.3;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .modal-btn-spin {
+            background: linear-gradient(135deg, var(--color-teal) 0%, var(--color-mint) 100%);
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 1.1rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25);
+        }
+
+        .modal-btn-spin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+            background: linear-gradient(135deg, var(--color-teal-dark) 0%, var(--color-teal) 100%);
+        }
+
+        .modal-btn-close {
+            background: transparent;
+            color: var(--color-slate-500);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            font-size: 1rem;
+            padding: 0.85rem;
+            border-radius: 16px;
+        }
+
+        .modal-btn-close:hover {
+            background: rgba(13, 148, 136, 0.05);
+            color: var(--color-teal-dark);
+            border-color: var(--color-teal-dark);
+        }
+
+        /* Confetti Fullscreen Overlay */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        /* Help Info Tooltip */
+        .footer-info {
+            text-align: center;
+            margin-top: auto;
+            padding: 2rem 0 1rem 0;
+            color: var(--color-slate-500);
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(13, 148, 136, 0.1);
+            width: 100%;
+        }
+
+        .footer-info a {
+            color: var(--color-teal);
+            text-decoration: none;
+        }
+
+        /* Alert Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            background: var(--color-slate-900);
+            border: 1px solid var(--color-mint);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 200;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Mobile-friendly responsiveness tweaks */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2.1rem;
+                gap: 0.5rem;
+            }
+            .header-icon {
+                width: 36px;
+                height: 36px;
+            }
+            header p {
+                font-size: 0.95rem;
+            }
+            .app-container {
+                padding: 1rem 0.75rem;
+                gap: 1.25rem;
+            }
+            .panel-card {
+                padding: 1.25rem;
+                border-radius: 18px;
+            }
+            .slot-machine-cabinet {
+                max-width: 290px;
+                padding: 16px 16px 12px 16px;
+                border-radius: 28px 28px 16px 16px;
+            }
+            .slot-reel-viewport {
+                max-width: 236px;
+                height: 300px;
+            }
+            .lever-container {
+                right: -25px;
+                top: 75px;
+                height: 160px;
+            }
+            .lever-shaft {
+                height: 85px;
+                width: 6px;
+            }
+            .lever-knob {
+                width: 22px;
+                height: 22px;
+                top: -18px;
+                left: -8px;
+            }
+            .btn {
+                padding: 0.85rem 1.5rem;
+                font-size: 1.05rem;
+            }
+            .winner-card {
+                padding: 2rem 1.25rem;
+                border-radius: 24px;
+            }
+            .winner-title {
+                font-size: 1.7rem;
+                margin-bottom: 1.5rem;
+            }
+            .winner-emoji {
+                font-size: 4rem;
+            }
+            .winner-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* Eliminate double tap delay on interactive items */
+        button, .lever-container, .food-item-left {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header>
+            <h1>
+                <!-- Premium SVG Cloche Icon -->
+                <svg class="header-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 20h20"></path>
+                    <path d="M20 16A8 8 0 0 0 4 16Z"></path>
+                    <path d="M12 8V4"></path>
+                    <circle cx="12" cy="3" r="1.5"></circle>
+                </svg>
+                <span class="gradient-text">ມື້ນີ້ກິນຫຍັງດີ?</span>
+            </h1>
+            <p>ລະບົບສຸ່ມເມນູອາຫານກາງວັນ ແລະ ແລງ ແບບມ່ວນຊື່ນ</p>
+        </header>
+
+        <main class="main-grid">
+            
+            <!-- Left Side: Slot Machine -->
+            <section class="panel-card spinner-section">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--color-slate-500); display: flex; align-items: center; gap: 0.5rem;">
+                    🎰 ດຶງຄັນໂຍກ ຫຼື ກົດປຸ່ມເພື່ອເລີ່ມສຸ່ມ
+                </h2>
+                
+                <!-- The Slot Machine Cabinet -->
+                <div class="slot-machine-cabinet">
+                    <!-- LED light rows at the top -->
+                    <div class="cabinet-led-header">
+                        <div class="led-dot" id="led-0"></div>
+                        <div class="led-dot" id="led-1"></div>
+                        <div class="led-dot" id="led-2"></div>
+                        <div class="led-dot" id="led-3"></div>
+                        <div class="led-dot" id="led-4"></div>
+                        <div class="led-dot" id="led-5"></div>
+                    </div>
+
+                    <!-- Screen Viewport -->
+                    <div class="slot-reel-viewport">
+                        <canvas id="reel-canvas" width="292" height="352"></canvas>
+                        
+                        <!-- Glowing Center Target Frame -->
+                        <div class="slot-target-frame"></div>
+                        <!-- Frame Indicator Arrows -->
+                        <div class="slot-arrow slot-arrow-left"></div>
+                        <div class="slot-arrow slot-arrow-right"></div>
+                    </div>
+
+                    <!-- Interactive Pull Handle Lever -->
+                    <div class="lever-container" onclick="handleLeverClick()">
+                        <div class="lever-shaft">
+                            <div class="lever-knob"></div>
+                        </div>
+                        <div class="lever-base"></div>
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    <button id="btn-spin" class="btn btn-primary" onclick="handleLeverClick()">
+                        🚀 ສຸ່ມເລີຍ! (SPIN)
+                    </button>
+                    <button id="btn-reset-wheel" class="btn btn-secondary" title="ຣີເຊັດເປັນເມນູເລີ່ມຕົ້ນ">
+                        🔄 ຣີເຊັດ
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Side: Menu List Manager -->
+            <section class="panel-card list-section">
+                <h2 class="panel-title">
+                    📝 ລາຍການເມນູອາຫານ (<span id="active-count" style="font-family: var(--font-alt);">0</span>/<span id="total-count" style="font-family: var(--font-alt);">0</span>)
+                </h2>
+
+                <!-- Input to add menu -->
+                <form id="add-menu-form" class="add-form" onsubmit="event.preventDefault(); addNewMenu();">
+                    <div class="input-group">
+                        <input type="text" id="menu-input" class="form-input" placeholder="ພิມເມນູອາຫານໃໝ່ທີ່ນີ້..." autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn-add">
+                        ➕ ເພີ່ມ
+                    </button>
+                </form>
+
+                <div class="list-controls">
+                    <div>ເລືອກເມນູເພື່ອໃຊ້ໃນການສຸ່ມ</div>
+                    <div class="quick-actions">
+                        <button type="button" class="action-link" onclick="selectAll(true)">ເລືອກທັງໝົດ</button>
+                        <button type="button" class="action-link" onclick="selectAll(false)">ຍົກເລີກທັງໝົດ</button>
+                    </div>
+                </div>
+
+                <!-- Scrolling list container -->
+                <div id="food-list" class="food-list-container">
+                    <!-- Dynamic Items will be rendered here -->
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="footer-info">
+            &copy; 2026 - ມື້ນີ້ກິນຫຍັງດີ? ພັດທະນາດ້ວຍ 💚 ໃຫ້ມີຄວາມສວຍງາມ ແລະ ສະບາຍຕາ
+        </footer>
+
+    </div>
+
+    <!-- Winner Modal Overlay -->
+    <div id="winner-modal" class="modal-overlay">
+        <div class="winner-card">
+            <div class="winner-subtitle">🎉 ເມນູອາຫານທີ່ທ່ານໄດ້ 🎉</div>
+            <div id="winner-emoji" class="winner-emoji">🍲</div>
+            <div id="winner-name" class="winner-title">ເຂົ້າກະເພົາໝູກອບ + ໄຂ່ດາວ</div>
+            
+            <div class="modal-actions">
+                <button id="modal-btn-spin" class="btn modal-btn-spin">
+                    🔁 ໝູນອີກຄັ້ງ (RE-SPIN)
+                </button>
+                <button id="modal-btn-close" class="btn modal-btn-close">
+                    ❌ ປິດໜ້າຕ່າງ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Overlay Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Toast message -->
+    <div id="toast-message" class="toast">📢 ຂໍ້ຄວາມແຈ້ງເຕືອນ</div>
+
+    <script>
+        // Lao initial default food list
+        const DEFAULT_MENUS = [
+            "ເຂົ້າຂาໝູ",
+            "ເຂົ້າມັນໄກ່",
+            "ເຂົ້າກະເພົາໝູກອບ + ໄຂ່ດາວ",
+            "ກະເພົາໝູສັບ + ໄຂ່ດາວ",
+            "ເຂົ້າກະເພົາງົວ + ໄຂ່ດາວ",
+            "ເຂົ້າກະເພົາທະເລ + ໄຂ່ດາວ",
+            "ເຂົ້າຄະນ້າໝູກອບ + ໄຂ່ດາວ",
+            "ເຂົ້າຜັດຂີງໝູ + ໄຂ່ດາວ",
+            "ເຂົ້າຜັດຂີງງົວ + ໄຂ່ດາວ",
+            "ເຂົ້າຜັດໝູ + ໄຂ່ດາວ",
+            "ເຂົ້າກະເພົາໝູກອບ",
+            "ເຂົ້າຜັດທະເລ + ໄຂ່ດາວ",
+            "ເຝີງົວ, ໝູ, ໝູກອບ",
+            "ເຂົ້າປຽກໝູ, ໝູກອບ, ງົວ",
+            "ຕົ້ມລ້ອນໝູ, ງົວ",
+            "ເກົາເຫຼົາ",
+            "ຜັດໄທ",
+            "ສຸກີ້ແຫ້ງ",
+            "ເຝີເຮືອ",
+            "ໝີ່ຈີນ",
+            "ໝໍ້ຮ້ອນ",
+            "ເຂົ້າຊອຍ",
+            "ເຂົ້າປຽກປາ",
+            "ລາດໜ້າເສັ້ນໃຫຍ່",
+            "ຜັດຊີອິ້ວເສັ້ນໃຫຍ່",
+            "ເຂົ້າໄຂ່ຈຽວ",
+            "ເຂົ້າຂົ້ວຜັກບົ້ງງົວ + ໄຂ່ດາວ"
+        ];
+
+        // Food emojis array to randomize the celebratory display
+        const FOOD_EMOJIS = ["🍲", "🍜", "🍛", "🍛", "🍳", "🍗", "🍲", "🥘", "🍱", "🍤", "🍣", "🥢", "🍖"];
+
+        // State variables
+        let menus = [];
+        let canvas, ctx;
+        let isSpinning = false;
+        
+        // Slot Physics Variables
+        let reelY = 0;
+        let targetReelY = 0;
+        let startReelY = 0;
+        const cardHeight = 70;
+        const cardGap = 20;
+        const cardStep = cardHeight + cardGap; // 90px step
+        let spinStartTime = 0;
+        let spinDuration = 4500; // 4.5 seconds
+        let lastTickInt = 0;
+        
+        let audioCtx = null;
+        let ledInterval = null;
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            canvas = document.getElementById('reel-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Adjust to handle high DPI displays nicely
+            resizeCanvas();
+
+            // Load data
+            loadMenus();
+
+            // Set up DOM events
+            document.getElementById('btn-reset-wheel').addEventListener('click', resetToDefault);
+            document.getElementById('modal-btn-spin').addEventListener('click', () => {
+                closeModal();
+                // Brief delay before starting next spin to let modal fade out
+                setTimeout(handleLeverClick, 300);
+            });
+            document.getElementById('modal-btn-close').addEventListener('click', closeModal);
+
+            // Blink LED header
+            startLEDAnimation();
+
+            // Draw initial static reel
+            drawReel();
+        });
+
+        // Initialize Audio context safely on user gesture
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        // Load menu list from localStorage or load defaults
+        function loadMenus() {
+            const saved = localStorage.getItem('food_menus_lao');
+            if (saved) {
+                try {
+                    menus = JSON.parse(saved);
+                } catch (e) {
+                    menus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
+                }
+            } else {
+                menus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
+            }
+            // Sort initial alignment to center on item 0
+            reelY = 0;
+            saveAndRender();
+        }
+
+        // Save menu list to localStorage and refresh UI
+        function saveAndRender() {
+            localStorage.setItem('food_menus_lao', JSON.stringify(menus));
+            renderFoodList();
+            drawReel();
+        }
+
+        // Render checked list inside the right panel scroll container
+        function renderFoodList() {
+            const listContainer = document.getElementById('food-list');
+            listContainer.innerHTML = '';
+            
+            let activeCount = 0;
+            menus.forEach((item, index) => {
+                if (item.enabled) activeCount++;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `food-item ${item.enabled ? 'active' : ''}`;
+                
+                itemDiv.innerHTML = `
+                    <div class="food-item-left" onclick="toggleItem(${index})">
+                        <div class="checkbox-custom"></div>
+                        <div class="food-name">${escapeHtml(item.name)}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteItem(${index})" title="ລຶບເມນູນີ້">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                `;
+                listContainer.appendChild(itemDiv);
+            });
+
+            document.getElementById('active-count').innerText = activeCount;
+            document.getElementById('total-count').innerText = menus.length;
+        }
+
+        // Helper to escape HTML tags to avoid XSS bugs
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Toggle enabled status of a food menu item
+        function toggleItem(index) {
+            if (isSpinning) return;
+            menus[index].enabled = !menus[index].enabled;
+            saveAndRender();
+        }
+
+        // Delete item from food list
+        function deleteItem(index) {
+            if (isSpinning) return;
+            const name = menus[index].name;
+            menus.splice(index, 1);
+            showToast(`ລຶບເມນູ "${name}" ແລ້ວ`);
+            saveAndRender();
+        }
+
+        // Add a brand new item to food list
+        function addNewMenu() {
+            if (isSpinning) return;
+            const input = document.getElementById('menu-input');
+            const name = input.value.trim();
+            if (!name) return;
+
+            // Check duplicate name
+            const exists = menus.some(item => item.name.toLowerCase() === name.toLowerCase());
+            if (exists) {
+                showToast("ມີເມນູນີ້ໃນລາຍການແລ້ວ!");
+                return;
+            }
+
+            menus.unshift({ name, enabled: true });
+            input.value = '';
+            showToast(`ເພີ່ມເມນູ "${name}" ສໍາເລັດ`);
+            saveAndRender();
+
+            // Scroll list to top
+            document.getElementById('food-list').scrollTop = 0;
+        }
+
+        // Select or unselect all items
+        function selectAll(enableStatus) {
+            if (isSpinning) return;
+            menus.forEach(item => item.enabled = enableStatus);
+            saveAndRender();
+        }
+
+        // Reset list to default initial items
+        function resetToDefault() {
+            if (isSpinning) return;
+            if (confirm("ທ່ານຕ້ອງການຣີເຊັດລາຍການເມນູທັງໝົດກັບໄປເປັນຄ່າເລີ່ມຕົ້ນ ຫຼື ບໍ່?")) {
+                menus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
+                reelY = 0;
+                saveAndRender();
+                showToast("ຣີເຊັດລາຍການອາຫານສໍາເລັດ");
+            }
+        }
+
+        // Get currently active items
+        function getActiveItems() {
+            return menus.filter(item => item.enabled);
+        }
+
+        // Card styling generator
+        function getCardColors(index, total) {
+            const colors = [
+                { bg: ['#e2f2f0', '#ffffff'], border: '#0d9488', text: '#0f766e' }, // Soft Teal
+                { bg: ['#f0fdfa', '#ccfbf1'], border: '#2dd4bf', text: '#0f766e' }, // Mint
+                { bg: ['#fef2f2', '#fee2e2'], border: '#f43f5e', text: '#991b1b' }, // Soft Red/Coral
+                { bg: ['#fffbeb', '#fef3c7'], border: '#f59e0b', text: '#92400e' }  // Soft Amber
+            ];
+            let idx = index % colors.length;
+            return {
+                bgStart: colors[idx].bg[0],
+                bgEnd: colors[idx].bg[1],
+                borderColor: colors[idx].border,
+                textColor: colors[idx].text
+            };
+        }
+
+        // 3D Cylindrical Vertical Reel Canvas Draw
+        function drawReel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const activeItems = getActiveItems();
+            const numItems = activeItems.length;
+            const centerY = canvas.height / 2;
+            const centerX = canvas.width / 2;
+            
+            // Draw backing grid glass surface
+            ctx.fillStyle = '#0b131e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Shading grid reflection lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            for (let y = 0; y < canvas.height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            if (numItems === 0) {
+                // Empty state warning
+                ctx.save();
+                ctx.fillStyle = '#64748b';
+                ctx.font = "bold 18px 'Noto Sans Lao', 'Segoe UI', sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('ກະລຸນາເລືອກຢ່າງໜ້ອຍ 1 ເມນູ', centerX, centerY);
+                ctx.restore();
+                return;
+            }
+
+            // Cylinder projection metrics
+            const radius = 175; // vertical bending radius
+
+            // Calculate center index closest to current scrolling position
+            // To align card index 0 at center (reelY = 0)
+            const centerOffsetIndex = Math.round(reelY / cardStep);
+            
+            // Render visible cards around the center
+            for (let offset = -4; offset <= 4; offset++) {
+                const itemVirtualIndex = centerOffsetIndex + offset;
+                
+                // Wrap index modulo activeItems size
+                let itemIdx = itemVirtualIndex % numItems;
+                if (itemIdx < 0) itemIdx += numItems;
+
+                // Card vertical center position before projection
+                const cardCenterY = centerY + (itemVirtualIndex * cardStep) - reelY;
+                
+                // Angle of bend on cylinder
+                const deltaY = cardCenterY - centerY;
+                const theta = deltaY / radius;
+                
+                // If it rotates past 90 degrees, it bends to the backside and is invisible
+                if (Math.abs(theta) > Math.PI / 2) continue;
+                
+                // Projected coordinates on screen (cosine vertical compression)
+                const projectedY = centerY + Math.sin(theta) * radius;
+                const verticalScale = Math.cos(theta);
+                const opacity = Math.cos(theta); // fade out at extremes
+
+                // Draw Card
+                ctx.save();
+                ctx.translate(centerX, projectedY);
+                ctx.scale(1.0, verticalScale);
+                ctx.globalAlpha = Math.max(0.15, opacity); // keep slight visibility
+
+                // Draw card body box
+                const cardWidth = 230;
+                const cardH = 68;
+                const colors = getCardColors(itemIdx, numItems);
+                
+                let cardGrad = ctx.createLinearGradient(0, -cardH/2, 0, cardH/2);
+                cardGrad.addColorStop(0, colors.bgStart);
+                cardGrad.addColorStop(1, colors.bgEnd);
+                
+                ctx.fillStyle = cardGrad;
+                ctx.beginPath();
+                ctx.roundRect(-cardWidth/2, -cardH/2, cardWidth, cardH, 14);
+                ctx.fill();
+                
+                // Border glow/reflection
+                ctx.strokeStyle = colors.borderColor;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Draw Card Shadow border for 3D depth
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.roundRect(-cardWidth/2 + 1, -cardH/2 + 1, cardWidth - 2, cardH - 2, 13);
+                ctx.stroke();
+
+                // Render food label text inside card
+                ctx.fillStyle = colors.textColor;
+                ctx.font = "bold 26px 'Noto Sans Lao', 'Segoe UI', sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const foodName = activeItems[itemIdx].name;
+                // Clip if too long
+                const displayLabel = foodName.length > 25 ? foodName.substring(0, 23) + '...' : foodName;
+                ctx.fillText(displayLabel, 0, 0, cardWidth - 25);
+                
+                ctx.restore();
+            }
+
+            // Draw top and bottom dark glass shaders (gives internal screen shadow)
+            const shaderGradTop = ctx.createLinearGradient(0, 0, 0, 80);
+            shaderGradTop.addColorStop(0, 'rgba(15, 23, 42, 0.9)');
+            shaderGradTop.addColorStop(1, 'transparent');
+            ctx.fillStyle = shaderGradTop;
+            ctx.fillRect(0, 0, canvas.width, 80);
+
+            const shaderGradBottom = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - 80);
+            shaderGradBottom.addColorStop(0, 'rgba(15, 23, 42, 0.9)');
+            shaderGradBottom.addColorStop(1, 'transparent');
+            ctx.fillStyle = shaderGradBottom;
+            ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+            
+            // Draw a subtle vertical screen reflection shine overlay
+            const reflection = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            reflection.addColorStop(0, 'rgba(255,255,255,0)');
+            reflection.addColorStop(0.2, 'rgba(255,255,255,0.04)');
+            reflection.addColorStop(0.3, 'rgba(255,255,255,0.08)');
+            reflection.addColorStop(0.35, 'rgba(255,255,255,0.02)');
+            reflection.addColorStop(0.4, 'rgba(255,255,255,0)');
+            ctx.fillStyle = reflection;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Web Audio Synthesizer sound generator
+        function playTickSound() {
+            if (!audioCtx) return;
+            try {
+                // High frequency sharp mechanical click
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.035);
+                
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.035);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) {}
+        }
+
+        function playLeverPullSound() {
+            if (!audioCtx) return;
+            try {
+                // Low mechanical pull clunk
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(75, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(160, audioCtx.currentTime + 0.08);
+                
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.09);
+            } catch (e) {}
+        }
+
+        function playLockSound() {
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                // Heavy metallic lock clank
+                const osc1 = audioCtx.createOscillator();
+                const osc2 = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc1.type = 'triangle';
+                osc1.frequency.setValueAtTime(120, now);
+                osc1.frequency.exponentialRampToValueAtTime(35, now + 0.15);
+                
+                osc2.type = 'sawtooth';
+                osc2.frequency.setValueAtTime(95, now);
+                osc2.frequency.exponentialRampToValueAtTime(30, now + 0.12);
+                
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.16);
+                
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.16);
+                osc2.stop(now + 0.16);
+            } catch (e) {}
+        }
+
+        function playSuccessSound() {
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                // Retro chord arpeggio C5 -> E5 -> G5 -> C6
+                const freqs = [523.25, 659.25, 783.99, 1046.50];
+                
+                freqs.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    
+                    gain.gain.setValueAtTime(0.08, now + idx * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+                    
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.3);
+                });
+            } catch (e) {}
+        }
+
+        // Handle pulling lever gesture interaction
+        function handleLeverClick() {
+            if (isSpinning) return;
+            
+            const activeItems = getActiveItems();
+            if (activeItems.length === 0) {
+                showToast("❌ ກະລຸນາເລືອກເມນູໃນລາຍການກ່ອນ!");
+                return;
+            }
+
+            initAudio();
+
+            // Trigger lever visual pulling compression animation
+            const lever = document.querySelector('.lever-container');
+            lever.classList.add('pulling');
+            playLeverPullSound();
+
+            // Disable buttons during transition
+            document.getElementById('btn-spin').disabled = true;
+            document.getElementById('btn-reset-wheel').disabled = true;
+
+            setTimeout(() => {
+                lever.classList.remove('pulling');
+                // Initiate spin after lever snap back
+                setTimeout(startSlotSpin, 150);
+            }, 300);
+        }
+
+        // Trigger Eased slot scroll spin targeting random item
+        function startSlotSpin() {
+            const activeItems = getActiveItems();
+            const numItems = activeItems.length;
+
+            isSpinning = true;
+            spinStartTime = Date.now();
+            lastTickInt = Math.floor(reelY / cardStep);
+
+            // Select random winning item
+            const winIndex = Math.floor(Math.random() * numItems);
+            
+            // Align target position (item winIndex must land exactly centered)
+            const stopScrollY = winIndex * cardStep;
+            
+            // Spin through 5-8 full rotations of entire list
+            const startScrollY = reelY;
+            const rotations = 4 + Math.floor(Math.random() * 3);
+            
+            // Math equation to target winIndex exactly
+            const fullRollOffset = rotations * numItems * cardStep;
+            const currentMod = startScrollY % (numItems * cardStep);
+            
+            targetReelY = startScrollY + fullRollOffset + (stopScrollY - currentMod);
+            
+            // Ensure target is ahead of starting point
+            if (targetReelY < startScrollY + (numItems * cardStep * 3)) {
+                targetReelY += numItems * cardStep;
+            }
+            
+            startReelY = startScrollY;
+            
+            animateSlot(winIndex);
+        }
+
+        // Slot animation frame render loop
+        function animateSlot(winIndex) {
+            const elapsed = Date.now() - spinStartTime;
+            const t = Math.min(elapsed / spinDuration, 1);
+            
+            // Easing curve: Cubic ease-out deceleration
+            const ease = 1 - Math.pow(1 - t, 3.5);
+            reelY = startReelY + (targetReelY - startReelY) * ease;
+            
+            // Mechanical ticker sound based on card line passings
+            const currentTickInt = Math.floor(reelY / cardStep);
+            if (currentTickInt !== lastTickInt) {
+                playTickSound();
+                lastTickInt = currentTickInt;
+            }
+            
+            drawReel();
+            
+            if (t < 1) {
+                requestAnimationFrame(() => animateSlot(winIndex));
+            } else {
+                // Spin complete
+                isSpinning = false;
+                
+                // Align reel perfectly at center target coordinate
+                const activeItems = getActiveItems();
+                reelY = winIndex * cardStep;
+                drawReel();
+
+                // Unlock controls
+                document.getElementById('btn-spin').disabled = false;
+                document.getElementById('btn-reset-wheel').disabled = false;
+
+                // Trigger winner celebrations
+                playLockSound();
+                playSuccessSound();
+                
+                const winner = activeItems[winIndex];
+                setTimeout(() => {
+                    // FIX: Pass the string name of the food instead of the item object
+                    showWinner(winner.name);
+                }, 250);
+            }
+        }
+
+        // Categorize food items to show relevant emoji
+        function getEmojiForMenu(menuName) {
+            const name = menuName.toLowerCase();
+            
+            // Check noodle/soup dishes
+            if (name.includes("ເຝີ") || 
+                name.includes("ເສັ້ນ") || 
+                name.includes("ໝີ") || 
+                name.includes("ປຽກ") || 
+                name.includes("ຜັດໄທ") || 
+                name.includes("ສຸກີ້") || 
+                name.includes("ຕົ້ມລ້ອນ") ||
+                name.includes("ລາດໜ້າ") ||
+                name.includes("ຜັດຊີອິ້ວ")) {
+                return "🍜"; // Noodle bowl emoji
+            }
+            
+            // Check rice dishes
+            if (name.includes("ເຂົ້າ")) {
+                if (name.includes("ໄຂ່ຈຽວ") || name.includes("ໄຂ່ດາວ")) {
+                    return "🍳"; // Omelet/Egg cooking emoji
+                }
+                return "🍛"; // Rice plate emoji
+            }
+            
+            // If the name contains egg directly but not rice
+            if (name.includes("ໄຂ່ຈຽວ") || name.includes("ໄຂ່ດາວ")) {
+                return "🍳";
+            }
+            
+            // General food bowl for other cases
+            return "🍲";
+        }
+
+        // Displays chosen food in a gorgeous pop-up
+        function showWinner(foodName) {
+            document.getElementById('winner-name').innerText = foodName;
+            
+            // Get category-specific emoji
+            const emoji = getEmojiForMenu(foodName);
+            document.getElementById('winner-emoji').innerText = emoji;
+            
+            // Open modal
+            document.getElementById('winner-modal').classList.add('show');
+            
+            // Burst confetti canons!
+            startConfetti();
+        }
+
+        function closeModal() {
+            document.getElementById('winner-modal').classList.remove('show');
+            stopConfetti();
+        }
+
+        // Toast Popup Notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast-message');
+            toast.innerText = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Cabinet LED light bulb animation loops
+        function startLEDAnimation() {
+            if (ledInterval) clearInterval(ledInterval);
+            
+            let phase = 0;
+            ledInterval = setInterval(() => {
+                const colors = ['#2dd4bf', '#0d9488', '#f43f5e', '#fbbf24'];
+                for (let i = 0; i < 6; i++) {
+                    const led = document.getElementById(`led-${i}`);
+                    if (!led) continue;
+                    
+                    let active = false;
+                    if (isSpinning) {
+                        // Rapid chase when spinning
+                        active = (i + phase) % 3 === 0;
+                    } else {
+                        // Slow alternate blink when idle
+                        active = (i + Math.floor(phase / 2)) % 2 === 0;
+                    }
+                    
+                    led.style.background = active ? colors[(i + phase) % colors.length] : '#1e293b';
+                    led.style.boxShadow = active ? `0 0 8px ${colors[(i + phase) % colors.length]}` : 'none';
+                }
+                phase++;
+            }, 180);
+        }
+
+        // ==========================================
+        // CUSTOM CANVAS CONFETTI PARTICLE SYSTEM
+        // ==========================================
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const confettiCtx = confettiCanvas.getContext('2d');
+        let confettiParticles = [];
+        let confettiInterval = null;
+        let confettiActive = false;
+
+        class ConfettiParticle {
+            constructor(x, y, isCannon = false, angle = 0) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 6;
+                this.colors = ['#2dd4bf', '#0d9488', '#38bdf8', '#fbbf24', '#f43f5e', '#a855f7', '#10b981'];
+                this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                this.shape = Math.random() > 0.4 ? 'square' : 'circle';
+                
+                if (isCannon) {
+                    const speed = Math.random() * 12 + 12;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                } else {
+                    const speed = Math.random() * 8 + 4;
+                    const dir = Math.random() * Math.PI * 2;
+                    this.vx = Math.cos(dir) * speed;
+                    this.vy = Math.sin(dir) * speed;
+                }
+                
+                this.gravity = 0.22;
+                this.friction = 0.97;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.18;
+                this.opacity = 1.0;
+                this.fadeOutRate = Math.random() * 0.01 + 0.005;
+            }
+            
+            update() {
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= this.fadeOutRate;
+            }
+            
+            draw() {
+                confettiCtx.save();
+                confettiCtx.translate(this.x, this.y);
+                confettiCtx.rotate(this.rotation);
+                confettiCtx.globalAlpha = this.opacity;
+                confettiCtx.fillStyle = this.color;
+                
+                if (this.shape === 'square') {
+                    confettiCtx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                } else {
+                    confettiCtx.beginPath();
+                    confettiCtx.arc(0, 0, this.size/2, 0, Math.PI * 2);
+                    confettiCtx.fill();
+                }
+                confettiCtx.restore();
+            }
+        }
+
+        function resizeConfettiCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfettiCanvas);
+
+        function startConfetti() {
+            resizeConfettiCanvas();
+            confettiParticles = [];
+            confettiActive = true;
+            
+            triggerConfettiCannons();
+            
+            if (confettiInterval) cancelAnimationFrame(confettiInterval);
+            loopConfetti();
+        }
+
+        function triggerConfettiCannons() {
+            const h = window.innerHeight;
+            const w = window.innerWidth;
+            
+            // Left corner bottom cannon firing up-right
+            for (let i = 0; i < 70; i++) {
+                confettiParticles.push(new ConfettiParticle(0, h, true, -Math.PI/6 - Math.random()*Math.PI/6));
+            }
+            // Right corner bottom cannon firing up-left
+            for (let i = 0; i < 70; i++) {
+                confettiParticles.push(new ConfettiParticle(w, h, true, -Math.PI*5/6 + Math.random()*Math.PI/6));
+            }
+            
+            // Extra center bursts
+            for (let i = 0; i < 40; i++) {
+                confettiParticles.push(new ConfettiParticle(w/2, h/2 - 50, false));
+            }
+        }
+
+        function loopConfetti() {
+            if (!confettiActive && confettiParticles.length === 0) {
+                confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                return;
+            }
+
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                const p = confettiParticles[i];
+                p.update();
+                
+                if (p.opacity <= 0 || p.y > window.innerHeight + 10 || p.x < -10 || p.x > window.innerWidth + 10) {
+                    confettiParticles.splice(i, 1);
+                } else {
+                    p.draw();
+                }
+            }
+
+            if (confettiActive && confettiParticles.length < 50 && Math.random() < 0.15) {
+                confettiParticles.push(new ConfettiParticle(Math.random() * window.innerWidth, -10, false));
+            }
+            
+            confettiInterval = requestAnimationFrame(loopConfetti);
+        }
+
+        function stopConfetti() {
+            confettiActive = false;
+        }
+    </script>
+</body>
+</html>
