@@ -178,53 +178,145 @@
             position: relative;
             width: 100%;
             max-width: 380px;
-            margin: 1.5rem 0;
-            background: linear-gradient(185deg, #ffffff 0%, #e6fcf5 60%, #ccfbf1 100%);
-            border: 5px solid var(--color-teal);
-            border-radius: 36px 36px 20px 20px;
+            margin: 4.5rem 0 2rem 0; /* Add top margin to make room for header arch */
+            background: #2dd4bf; /* Mint background */
+            border: 6px solid #0f766e; /* Thick dark outline */
+            border-radius: 40px 40px 24px 24px;
             padding: 24px 24px 20px 24px;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.18), 
-                        0 0 20px rgba(45, 212, 191, 0.35),
-                        inset 0 4px 0 #ffffff,
-                        inset 0 -4px 0 var(--color-mint);
-            border-bottom: 12px solid var(--color-teal-dark);
+            box-shadow: 0 15px 0 rgba(15, 118, 110, 0.15), 
+                        0 20px 40px rgba(15, 23, 42, 0.12);
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Top Casing LED lights bar */
-        .cabinet-led-header {
-            width: 100%;
-            height: 12px;
+        /* Top Header Arch Banner */
+        .cabinet-header-arch {
+            width: 80%;
+            height: 60px;
+            background: #fde047; /* Yellow */
+            border: 5px solid #0f766e;
+            border-bottom: none;
+            border-radius: 80px 80px 0 0;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 12px;
-            background: #1e293b;
-            border-radius: 6px;
-            padding: 2px;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -55px;
+            left: 10%;
+            z-index: 2;
+            box-shadow: inset 0 4px 0 #ffffff;
         }
 
-        .led-dot {
-            width: 8px;
-            height: 8px;
+        .header-arch-title {
+            font-family: var(--font-main);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f766e;
+            text-shadow: 1px 1px 0 #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Side Ears (Yellow wings) */
+        .cabinet-ear {
+            position: absolute;
+            width: 30px;
+            height: 120px;
+            background: #fde047; /* Yellow */
+            border: 5px solid #0f766e;
+            z-index: -1; /* Behind the cabinet */
+        }
+
+        .cabinet-ear-left {
+            left: -24px;
+            top: 140px;
+            border-radius: 20px 0 0 20px;
+            box-shadow: inset 3px 0 0 #ffffff;
+        }
+
+        .cabinet-ear-right {
+            right: -24px;
+            top: 140px;
+            border-radius: 0 20px 20px 0;
+            box-shadow: inset -3px 0 0 #ffffff;
+        }
+
+        /* Make a Wish text */
+        .cabinet-brand-text {
+            font-family: var(--font-alt);
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #e11d48; /* Coral/Pink */
+            text-transform: uppercase;
+            margin: 0 0 12px 0;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #ffffff;
+            text-align: center;
+        }
+
+        /* Outer Frame holding the bulbs and viewport screen */
+        .slot-machine-screen-container {
+            width: 100%;
+            background: #0f766e; /* Dark Teal frame */
+            border: 5px solid #115e59;
+            border-radius: 24px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 6px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Rows of LED Bulbs */
+        .bulbs-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 4px;
+        }
+
+        .bulbs-row.horizontal {
+            margin: 4px 0;
+        }
+
+        /* Middle layout row containing left bulbs, viewport screen, and right bulbs */
+        .screen-middle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 6px;
+        }
+
+        .bulbs-column.vertical {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 280px; /* matches viewport height */
+            padding: 4px 0;
+        }
+
+        /* Individual bulb styling */
+        .led-bulb {
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: var(--color-teal);
-            transition: all 0.25s;
+            background: #fef08a; /* Dim yellow base */
+            border: 2px solid #0f766e;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+            transition: all 0.15s;
         }
 
         /* View Screen viewport */
         .slot-reel-viewport {
-            width: 100%;
-            max-width: 300px;
-            height: 360px;
+            height: 280px;
+            flex-grow: 1;
             background: #0f172a;
-            border: 4px solid var(--color-teal);
+            border: 4px solid #0f766e;
             border-radius: 16px;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9),
-                        0 0 15px rgba(45, 212, 191, 0.25);
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
         }
 
         #reel-canvas {
@@ -240,7 +332,7 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            height: 90px;
+            height: 86px;
             border: 3.5px dashed var(--color-mint);
             border-radius: 12px;
             pointer-events: none;
@@ -272,13 +364,60 @@
             border-right: 12px solid var(--color-coral);
         }
 
-        /* Pull Lever container on the right */
+        /* Ticker Tape horizontal banner ribbon */
+        .cabinet-ticker-tape {
+            width: calc(100% + 12px);
+            height: 38px;
+            background: #ffffff;
+            border: 4px solid #0f766e;
+            border-radius: 10px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 0 rgba(15, 118, 110, 0.15);
+        }
+
+        .ticker-text {
+            white-space: nowrap;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f766e;
+            animation: ticker-slide 18s linear infinite;
+            display: inline-block;
+            padding-left: 100%;
+        }
+
+        @keyframes ticker-slide {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* Bottom Base panel with yellow sunburst rays */
+        .cabinet-base-panel {
+            width: 100%;
+            height: 80px;
+            background-color: #fef08a; /* Yellow base */
+            border: 4px solid #0f766e;
+            border-radius: 12px;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 4px 0 #ffffff, 0 4px 0 rgba(15, 118, 110, 0.15);
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><g fill='%23eab308' opacity='0.25'><polygon points='50,50 0,0 20,0'/><polygon points='50,50 40,0 60,0'/><polygon points='50,50 80,0 100,0'/><polygon points='50,50 100,20 100,40'/><polygon points='50,50 100,60 100,80'/><polygon points='50,50 100,100 80,100'/><polygon points='50,50 60,100 40,100'/><polygon points='50,50 20,100 0,100'/><polygon points='50,50 0,80 0,60'/><polygon points='50,50 0,40 0,20'/></g></svg>");
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Pull Lever container on the right (attaches to yellow ear) */
         .lever-container {
             position: absolute;
-            right: -32px;
-            top: 100px;
+            right: -36px;
+            top: 120px;
             width: 40px;
-            height: 200px;
+            height: 180px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -287,36 +426,47 @@
             perspective: 400px;
         }
 
+        /* Expanded hit box for mobile/touch screens */
+        .lever-container::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            bottom: -20px;
+            left: -20px;
+            right: -20px;
+            z-index: 1;
+        }
+
         .lever-shaft {
-            width: 8px;
-            height: 110px;
-            background: linear-gradient(90deg, var(--color-teal-light), #ffffff 50%, var(--color-teal-dark));
-            border-radius: 4px;
+            width: 10px;
+            height: 90px;
+            background: #ffffff;
+            border: 3.5px solid #0f766e;
+            border-radius: 6px;
             transform-origin: bottom center;
             transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
         }
 
         .lever-knob {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             background: radial-gradient(circle at 30% 30%, #ff8a9e, var(--color-coral));
+            border: 3.5px solid #0f766e;
             border-radius: 50%;
             position: absolute;
-            top: -24px;
-            left: -10px;
-            box-shadow: 0 4px 10px rgba(244, 63, 94, 0.5),
-                        inset -2px -2px 6px rgba(0,0,0,0.3);
+            top: -28px;
+            left: -11px;
+            box-shadow: 0 4px 0 rgba(15, 118, 110, 0.15);
             transition: transform 0.15s;
         }
 
         .lever-base {
-            width: 32px;
-            height: 32px;
-            background: radial-gradient(circle at center, var(--color-teal), var(--color-teal-dark));
+            width: 36px;
+            height: 36px;
+            background: var(--color-teal);
+            border: 3.5px solid #0f766e;
             border-radius: 50%;
-            border: 3px solid var(--color-mint-light);
-            box-shadow: 0 3px 8px rgba(13, 148, 136, 0.4);
             margin-top: -8px;
             z-index: 6;
         }
@@ -327,7 +477,7 @@
         }
 
         .lever-container.pulling .lever-knob {
-            transform: translateY(80px) scale(0.9);
+            transform: translateY(60px) scale(0.9);
         }
 
         /* Spin & Control Buttons */
@@ -793,28 +943,65 @@
                 border-radius: 18px;
             }
             .slot-machine-cabinet {
-                max-width: 290px;
+                max-width: 310px; /* Slightly wider to accommodate ears and lever nicely */
                 padding: 16px 16px 12px 16px;
-                border-radius: 28px 28px 16px 16px;
+                border-radius: 30px 30px 16px 16px;
+            }
+            .cabinet-header-arch {
+                height: 46px;
+                top: -42px;
+            }
+            .header-arch-title {
+                font-size: 0.95rem;
+            }
+            .cabinet-ear {
+                width: 20px;
+                height: 90px;
+            }
+            .cabinet-ear-left { left: -16px; top: 120px; }
+            .cabinet-ear-right { right: -16px; top: 120px; }
+            
+            .slot-machine-screen-container {
+                padding: 8px;
             }
             .slot-reel-viewport {
-                max-width: 236px;
-                height: 300px;
+                height: 220px;
+            }
+            .bulbs-column.vertical {
+                height: 220px;
+            }
+            .led-bulb {
+                width: 10px;
+                height: 10px;
+                border-width: 1.5px;
             }
             .lever-container {
                 right: -25px;
-                top: 75px;
-                height: 160px;
+                top: 80px;
+                height: 140px;
             }
             .lever-shaft {
-                height: 85px;
-                width: 6px;
+                height: 65px;
+                width: 7px;
+                border-width: 2.5px;
             }
             .lever-knob {
-                width: 22px;
-                height: 22px;
-                top: -18px;
+                width: 24px;
+                height: 24px;
+                top: -20px;
                 left: -8px;
+                border-width: 2.5px;
+            }
+            .lever-base {
+                width: 28px;
+                height: 28px;
+                border-width: 2.5px;
+            }
+            .cabinet-ticker-tape {
+                height: 30px;
+            }
+            .cabinet-base-panel {
+                height: 60px;
             }
             .btn {
                 padding: 0.85rem 1.5rem;
@@ -870,26 +1057,86 @@
                 
                 <!-- The Slot Machine Cabinet -->
                 <div class="slot-machine-cabinet">
-                    <!-- LED light rows at the top -->
-                    <div class="cabinet-led-header">
-                        <div class="led-dot" id="led-0"></div>
-                        <div class="led-dot" id="led-1"></div>
-                        <div class="led-dot" id="led-2"></div>
-                        <div class="led-dot" id="led-3"></div>
-                        <div class="led-dot" id="led-4"></div>
-                        <div class="led-dot" id="led-5"></div>
+                    <!-- Header Arch Banner -->
+                    <div class="cabinet-header-arch">
+                        <span class="header-arch-title">ມື້ນີ້ກິນຫຍັງດີ?</span>
                     </div>
 
-                    <!-- Screen Viewport -->
-                    <div class="slot-reel-viewport">
-                        <canvas id="reel-canvas" width="292" height="352"></canvas>
+                    <!-- Left and Right Ears -->
+                    <div class="cabinet-ear cabinet-ear-left"></div>
+                    <div class="cabinet-ear cabinet-ear-right"></div>
+
+                    <!-- Make a Wish text -->
+                    <div class="cabinet-brand-text">MAKE A WISH & SPIN!</div>
+
+                    <!-- Screen Container with LED Bulbs Frame -->
+                    <div class="slot-machine-screen-container">
+                        <!-- Top Bulbs Row (8 bulbs) -->
+                        <div class="bulbs-row horizontal">
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                        </div>
                         
-                        <!-- Glowing Center Target Frame -->
-                        <div class="slot-target-frame"></div>
-                        <!-- Frame Indicator Arrows -->
-                        <div class="slot-arrow slot-arrow-left"></div>
-                        <div class="slot-arrow slot-arrow-right"></div>
+                        <!-- Middle row (Left bulbs, Viewport, Right bulbs) -->
+                        <div class="screen-middle-row">
+                            <!-- Left Bulbs Column (5 bulbs) -->
+                            <div class="bulbs-column vertical">
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                            </div>
+
+                            <!-- Screen Viewport -->
+                            <div class="slot-reel-viewport">
+                                <canvas id="reel-canvas" width="220" height="280"></canvas>
+                                
+                                <!-- Glowing Center Target Frame -->
+                                <div class="slot-target-frame"></div>
+                                <!-- Frame Indicator Arrows -->
+                                <div class="slot-arrow slot-arrow-left"></div>
+                                <div class="slot-arrow slot-arrow-right"></div>
+                            </div>
+
+                            <!-- Right Bulbs Column (5 bulbs) -->
+                            <div class="bulbs-column vertical">
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                                <div class="led-bulb"></div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Bulbs Row (8 bulbs) -->
+                        <div class="bulbs-row horizontal">
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                            <div class="led-bulb"></div>
+                        </div>
                     </div>
+
+                    <!-- Ticker Tape Ribbon -->
+                    <div class="cabinet-ticker-tape">
+                        <div class="ticker-text">
+                            ເຝີງົວ · ເຂົ້າຂາໝູ · ປີ້ງຈີນ · ຊີ້ນດາດ · ເຂົ້າມັນໄກ່ · ຕົ້ມຍຳ · ຕຳໝາກຫຸ່ງ · ສຸກີ້ · ໝໍ້ຮ້ອນ · ເຂົ້າປຽກ · ໝີ່ຈີນ · ເຂົ້າຊອຍ · 
+                        </div>
+                    </div>
+
+                    <!-- Bottom Base Box with Sunburst -->
+                    <div class="cabinet-base-panel"></div>
 
                     <!-- Interactive Pull Handle Lever -->
                     <div class="lever-container" onclick="handleLeverClick()">
@@ -1049,6 +1296,33 @@
             });
             document.getElementById('modal-btn-close').addEventListener('click', closeModal);
 
+            // Touch drag-down gesture support for the lever
+            let touchStartY = 0;
+            let isDraggingLever = false;
+            const leverContainer = document.querySelector('.lever-container');
+            if (leverContainer) {
+                leverContainer.addEventListener('touchstart', (e) => {
+                    if (isSpinning) return;
+                    touchStartY = e.touches[0].clientY;
+                    isDraggingLever = true;
+                    initAudio();
+                }, { passive: true });
+
+                leverContainer.addEventListener('touchmove', (e) => {
+                    if (!isDraggingLever || isSpinning) return;
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = currentY - touchStartY;
+                    if (deltaY > 30) {
+                        isDraggingLever = false;
+                        handleLeverClick();
+                    }
+                }, { passive: true });
+
+                leverContainer.addEventListener('touchend', () => {
+                    isDraggingLever = false;
+                }, { passive: true });
+            }
+
             // Blink LED header
             startLEDAnimation();
 
@@ -1075,18 +1349,39 @@
         // Load menu list from localStorage or load defaults
         function loadMenus() {
             const saved = localStorage.getItem('food_menus_lao');
+            let loadedMenus = [];
             if (saved) {
                 try {
-                    menus = JSON.parse(saved);
+                    loadedMenus = JSON.parse(saved);
                 } catch (e) {
-                    menus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
+                    loadedMenus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
                 }
             } else {
-                menus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
+                loadedMenus = DEFAULT_MENUS.map(name => ({ name, enabled: true }));
             }
+            
+            // Check if we need to sync any missing default menus into the loaded list
+            const loadedNames = new Set(loadedMenus.map(m => m.name.trim().toLowerCase()));
+            let hasNewDefaults = false;
+            
+            DEFAULT_MENUS.forEach(defaultName => {
+                if (!loadedNames.has(defaultName.trim().toLowerCase())) {
+                    loadedMenus.push({ name: defaultName, enabled: true });
+                    hasNewDefaults = true;
+                }
+            });
+            
+            menus = loadedMenus;
+            
             // Sort initial alignment to center on item 0
             reelY = 0;
-            saveAndRender();
+            
+            if (hasNewDefaults) {
+                saveAndRender();
+            } else {
+                renderFoodList();
+                drawReel();
+            }
         }
 
         // Save menu list to localStorage and refresh UI
@@ -1635,25 +1930,29 @@
             
             let phase = 0;
             ledInterval = setInterval(() => {
-                const colors = ['#2dd4bf', '#0d9488', '#f43f5e', '#fbbf24'];
-                for (let i = 0; i < 6; i++) {
-                    const led = document.getElementById(`led-${i}`);
-                    if (!led) continue;
-                    
+                const bulbs = document.querySelectorAll('.led-bulb');
+                bulbs.forEach((bulb, idx) => {
                     let active = false;
                     if (isSpinning) {
-                        // Rapid chase when spinning
-                        active = (i + phase) % 3 === 0;
+                        // Rapid chasing circle when spinning
+                        active = (idx + phase) % 3 === 0;
                     } else {
-                        // Slow alternate blink when idle
-                        active = (i + Math.floor(phase / 2)) % 2 === 0;
+                        // Soft alternating blink when idle
+                        active = (idx + Math.floor(phase / 2)) % 2 === 0;
                     }
                     
-                    led.style.background = active ? colors[(i + phase) % colors.length] : '#1e293b';
-                    led.style.boxShadow = active ? `0 0 8px ${colors[(i + phase) % colors.length]}` : 'none';
-                }
+                    if (active) {
+                        bulb.style.background = '#fde047'; // bright yellow
+                        bulb.style.boxShadow = '0 0 10px #fde047, inset 0 1px 0 #ffffff';
+                        bulb.style.borderColor = '#0f766e';
+                    } else {
+                        bulb.style.background = '#fef08a'; // dim yellow
+                        bulb.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.5)';
+                        bulb.style.borderColor = '#0f766e';
+                    }
+                });
                 phase++;
-            }, 180);
+            }, 150);
         }
 
         // ==========================================
